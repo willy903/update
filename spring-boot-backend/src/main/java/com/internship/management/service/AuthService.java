@@ -175,7 +175,7 @@ public class AuthService {
 
         Encadreur encadreur = null;
         if (request.getEncadreurId() != null) {
-            encadreur = encadreurRepository.findById(request.getEncadreurId())
+            encadreur = encadreurRepository.findByUserId(request.getEncadreurId())
                     .orElseThrow(() -> new RuntimeException(MessageCode.USER_NOT_FOUND.name()));
         }
 
