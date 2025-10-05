@@ -52,8 +52,10 @@ public class EncadreurService {
     }
 
     @Transactional(readOnly = true)
-    public List<InternDTO> getEncadreurInterns(Long encadreurId) {
-        List<Intern> interns = internRepository.findByEncadreurId(encadreurId);
+    public List<InternDTO> getEncadreurInterns(Long userId) {
+        Encadreur encadreur = encadreurRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("ENCADREUR_NOT_FOUND"));
+        List<Intern> interns = internRepository.findByEncadreurId(encadreur.getId());
         return interns.stream()
                 .map(this::convertInternToDTO)
                 .collect(Collectors.toList());
@@ -115,15 +117,17 @@ public class EncadreurService {
     }
 
     @Transactional
-    public void deleteEncadreur(Long id) {
-        User user = userRepository.findById(id)
+    public void deleteEncadreur(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("ENCADREUR_NOT_FOUND"));
 
         if (user.getRole() != User.Role.ENCADREUR) {
             throw new RuntimeException("NOT_AN_ENCADREUR");
         }
 
-        List<Intern> assignedInterns = internRepository.findByEncadreurId(id);
+        Encadreur encadreur = encadreurRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("ENCADREUR_NOT_FOUND"));
+        List<Intern> assignedInterns = internRepository.findByEncadreurId(encadreur.getId());
         if (!assignedInterns.isEmpty()) {
             throw new RuntimeException("HAS_ASSIGNED_INTERNS");
         }
@@ -132,8 +136,10 @@ public class EncadreurService {
     }
 
     @Transactional(readOnly = true)
-    public Long getEncadreurInternCount(Long encadreurId) {
-        return (long) internRepository.findByEncadreurId(encadreurId).size();
+    public Long getEncadreurInternCount(Long userId) {
+        Encadreur encadreur = encadreurRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("ENCADREUR_NOT_FOUND"));
+        return (long) internRepository.findByEncadreurId(encadreur.getId()).size();
     }
 
     private UserDTO convertToDTO(User user) {

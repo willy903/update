@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface InternRepository extends JpaRepository<Intern, Long> {
     Optional<Intern> findByUserId(Long userId);
     List<Intern> findByEncadreurId(Long encadreurId);
+    List<Intern> findByEncadreurUserId(Long encadreurUserId);
     List<Intern> findByProjectId(Long projectId);
     List<Intern> findByStatus(Intern.InternshipStatus status);
 
